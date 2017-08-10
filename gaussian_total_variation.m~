@@ -1,0 +1,37 @@
+function x = gaussian_total_variation(y,L,k,dt,T)
+    x = zeros(size(y));
+    
+    [gx,gy,gxx,gyy,gxy] = gaussian_deriv(k,0.5);
+    
+    mu = 0.5;
+    nu = 0.5;
+    
+    mI = zeros(size(J));
+    nI = zeros(size(J));
+    
+    for t = 1:T
+        disp(t);
+        for c = 1:size(J,3)
+            Ix(:,:,c) = conv2(I(:,:,c),gx,'same');
+            Iy(:,:,c) = conv2(I(:,:,c),gy,'same');
+        
+            Ixx(:,:,c) = conv2(Ix(:,:,c),gxx,'same');
+            Ixy(:,:,c) = conv2(Ix(:,:,c),gyy,'same');
+            Iyy(:,:,c) = conv2(Iy(:,:,c),gxy,'same');
+        end
+        
+        Ix2 = Ix.^2;
+        Iy2 = Iy.^2;
+        gI = (L*(J-I)+(Ixx.*Iy2+Iyy.*Ix2-2.0*Ix.*Iy.*Ixy)./((Ix2+Iy2).^(1.5)+1e-10))/numel(J);
+        mI = mu*mI+(1.0-mu)*gI;
+        nI = nu*nI+(1.0-nu)*gI.^2;
+        
+        mI_ = mI / (1.0-mu.^t);
+        nI_ = nI / (1.0-nu.^t);
+        
+        I = I + dt * mI_./(1e-10+sqrt(nI_));
+        
+        E = mean(mean(mean(sqrt(Ix.^2+Iy.^2)+0.5*L*(I-J).^2)));
+        disp(E);
+    end
+end
