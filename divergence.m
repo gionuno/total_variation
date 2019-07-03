@@ -1,7 +1,7 @@
 function divI = divergence(Ix,Iy)
     divI = zeros(size(Ix));
-    for i = 1:size(I,1)
-        for j = 1:size(I,2)
+    for i = 1:size(Ix,1)
+        for j = 1:size(Ix,2)
             if 1 < i && i < size(Ix,1)
                 divI(i,j,:) = divI(i,j,:) - Ix(i-1,j,:) + Ix(i,j,:);
             elseif i == 1
